@@ -20,12 +20,16 @@
     "url": "https://github.com/Holo-Host/data-translator-js"
   },
   "files": [
-    "README.md"
+    "README.md",
+    "src/index.js",
+    "dist/hhdt.js",
+    "dist/hhdt.js.map"
   ],
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
+    "@whi/http": "^0.2.3",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",
     "babel-polyfill": "^6.26.0",

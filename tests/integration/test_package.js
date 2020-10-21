@@ -5,6 +5,9 @@ const log				= require('@whi/stdlog')(path.basename( __filename ), {
 
 const expect				= require('chai').expect;
 const puppeteer				= require('puppeteer');
+const http				= require('@whi/http');
+
+const HTTP_PORT				= 2222;
 
 let browser;
 
@@ -27,14 +30,18 @@ async function create_page ( url ) {
 }
 
 function basic_tests ( page_url ) {
-    let page;
+    let page, server;
 
     before("Start page", async () => {
+	server				= new http.server();
+	server.serve_local_assets( path.resolve( __dirname, "../../" ) );
+	server.listen( HTTP_PORT )
 	page				= await create_page( page_url );
     });
 
     after("Close page", async () => {
 	await page.close();
+	server.close();
     });
 
 
@@ -81,7 +88,7 @@ function basic_tests ( page_url ) {
 
 describe("Testing in browser", function() {
 
-    let http_url			= `http://localhost:2222`;
+    let http_url			= `http://localhost:${HTTP_PORT}`;
 
     before("Start servers and browser", async () => {
 	browser				= await puppeteer.launch();
