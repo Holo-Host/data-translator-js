@@ -1,4 +1,5 @@
 [![](https://img.shields.io/npm/v/@holo-host/data-translator/latest?style=flat-square)](http://npmjs.com/package/@holo-host/data-translator)
+[![](https://img.shields.io/github/workflow/status/holo-host/data-translator-js/Node.js%20CI/master?style=flat-square&label=master)](https://github.com/holo-host/data-translator-js)
 
 # Holo Data Translator
 A tool for translating payloads across Holo services (layer 6 of OSI Model).

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename hhdt.js",
-    "test": "make test"
+    "test": "make test-debug"
   },
   "author": "Holo Ltd.",
   "contributors": [
