@@ -37,13 +37,59 @@ function create_tests () {
     });
 
     it("should create error package", async () => {
-	const pack			= Package.createFromError( "HoloError", new InstanceNotRunningError("Holochain instance is not active yet") );
+	const pack			= new Package({
+	    "source": "HoloError",
+	    "error": "InstanceNotRunningError",
+	    "message": "Holochain instance is not active yet",
+	    "stack": [],
+	}, {
+	    "type": "error"
+	});
 
 	expect( pack.value()		).to.be.an("error");
+	expect( pack.toJSON()		).to.deep.equal( JSON.parse(holo_error_msg) );
 
-	const json			= pack.toJSON();
+	const err			= new InstanceNotRunningError("Holochain instance is not active yet");
+	const from			= Package.createFromError( "HoloError", err );
+
+	expect( from.value()		).to.be.an("error");
+
+	const json			= from.toJSON();
 	json.payload.stack		= [];
 	expect( json			).to.deep.equal( JSON.parse(holo_error_msg) );
+
+	const crafted			= Package.createFromError( "HoloError", {
+	    "name": "InstanceNotRunningError",
+	    "message": "Holochain instance is not active yet",
+	});
+	expect( crafted.value()		).to.be.an("error");
+	expect( crafted.toJSON()	).to.deep.equal( JSON.parse(holo_error_msg) );
+    });
+
+    it("should fail to create success package", async () => {
+	expect(() => {
+	    new Package( true, { "type": null });
+	}				).to.throw( TypeError, "Value must be a string" );
+	expect(() => {
+	    new Package( true, { "type": "invalid_string" });
+	}				).to.throw( TypeError, "Invalid 'type' value: invalid_string" );
+	expect(() => {
+	    new Package( true, { "response_id": null });
+	}				).to.throw( TypeError, "Value must be a string" );
+    });
+
+    it("should fail to create error package", async () => {
+	const valid_error		= new InstanceNotRunningError("Holochain instance is not active yet") ;
+
+	expect(() => {
+	    Package.createFromError( null, valid_error );
+	}				).to.throw( TypeError, "Value must be a string" );
+	expect(() => {
+	    Package.createFromError( "Blablabla", valid_error );
+	}				).to.throw( TypeError, "Invalid 'source' value: Blablabla" );
+	expect(() => {
+	    Package.createFromError( "HoloError", "not an error" );
+	}				).to.throw( TypeError, "Value is required" );
     });
 }
 
@@ -57,12 +103,21 @@ function parse_tests () {
     it("should parse JSON into error package", async () => {
 	const pack			= hhdt.parse( holo_error_msg );
 	const error			= pack.value();
-	expect( error			).to.be.an("error");
 
-	let test			= () => {
+	expect( error			).to.be.an("error");
+	expect(() => {
 	    throw error;
-	};
-	expect( test			).to.throw( hhdt.sources.HoloError, "instance is not active" );
+	}				).to.throw( hhdt.sources.HoloError, "instance is not active" );
+    });
+
+    it("should fail to parse JSON into error package", async () => {
+	const invalid_error_msg		= JSON.stringify({
+	    "type": "error",
+	    "payload": null,
+	});
+	expect(() => {
+	    hhdt.parse( invalid_error_msg );
+	}				).to.throw( TypeError, "Value cannot be null or undefined" );
     });
 }
 
