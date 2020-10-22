@@ -32,7 +32,8 @@ async function create_page ( url ) {
 function basic_tests ( page_url ) {
     let page, server;
 
-    before("Start page", async () => {
+    before("Start page", async function () {
+	this.timeout( 5000 );
 	server				= new http.server();
 	server.serve_local_assets( path.resolve( __dirname, "../../" ) );
 	server.listen( HTTP_PORT )
@@ -90,7 +91,8 @@ describe("Testing in browser", function() {
 
     let http_url			= `http://localhost:${HTTP_PORT}`;
 
-    before("Start servers and browser", async () => {
+    before("Start servers and browser", async function () {
+	this.timeout( 5000 );
 	browser				= await puppeteer.launch();
     });
 
