@@ -6,7 +6,7 @@ package-lock.json:	package.json
 node_modules:		package-lock.json
 	npm install
 	touch $@
-dist:			node_modules src
+dist:			node_modules src webpack.config.js
 	npm run build
 	touch $@
 build:			node_modules

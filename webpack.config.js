@@ -7,10 +7,10 @@ module.exports			= {
     mode: 'development', // production | development
     devtool: 'source-map',
 
-    entry: [ "babel-polyfill", "./src/index.js" ],
+    entry: [ "./src/index.js" ],
 
-    // Assign 'module.exports' to the variable defined by `output.library`
     output: {
+	// Assign 'module.exports' to the variable defined by `output.library`
 	library: "HHDT",
 	libraryTarget: "umd",
 

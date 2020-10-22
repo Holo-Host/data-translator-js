@@ -32,7 +32,6 @@
     "@whi/http": "^0.2.3",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",
-    "babel-polyfill": "^6.26.0",
     "chai": "^4.2.0",
     "mocha": "^7.1.2",
     "puppeteer": "^5.3.1",
