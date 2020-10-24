@@ -2,7 +2,7 @@
 [![](https://img.shields.io/github/workflow/status/holo-host/data-translator-js/Node.js%20CI/master?style=flat-square&label=master)](https://github.com/holo-host/data-translator-js)
 
 # Holo Data Translator
-A tool for translating payloads across Holo services (layer 6 of OSI Model).
+A tool for translating payloads across Holo services.
 
 [![](https://img.shields.io/github/issues-raw/holo-host/data-translator-js?style=flat-square)](https://github.com/holo-host/data-translator-js/issues)
 [![](https://img.shields.io/github/issues-closed-raw/holo-host/data-translator-js?style=flat-square)](https://github.com/holo-host/data-translator-js/issues?q=is%3Aissue+is%3Aclosed)
@@ -59,3 +59,7 @@ ws.on("message", (msg) => {
     console.log( payload instanceof Error ); // true
 });
 ```
+
+### Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
