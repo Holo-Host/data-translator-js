@@ -19,9 +19,12 @@ We want to
 
 ### Constraints
 
+- This library must not attempt to handle the transporting of messages
+  - It's purpose must only be to pack/parse message for transport
 - Minimize library size
   - Since this is used on the client side, we want the library to be as small as possible.  This
     means we want to avoid including any dependencies that don't justify their own size.
+
 
 ### Architecture
 ```
