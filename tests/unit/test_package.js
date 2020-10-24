@@ -10,8 +10,10 @@ const { Package }			= hhdt;
 
 
 const success_msg			= JSON.stringify({
-    "response_id": "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL",
     "type": "success",
+    "metadata": {
+	"response_id": "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL",
+    },
     "payload": true,
 });
 const holo_error_msg			= JSON.stringify({
@@ -28,7 +30,7 @@ class InstanceNotRunningError extends Error {}
 
 function create_tests () {
     it("should create success package", async () => {
-	const pack			= new Package( true, {
+	const pack			= new Package( true, {}, {
 	    "response_id": "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL",
 	});
 
@@ -73,9 +75,6 @@ function create_tests () {
 	expect(() => {
 	    new Package( true, { "type": "invalid_string" });
 	}				).to.throw( TypeError, "Invalid 'type' value: invalid_string" );
-	expect(() => {
-	    new Package( true, { "response_id": null });
-	}				).to.throw( TypeError, "Value must be a string" );
     });
 
     it("should fail to create error package", async () => {
@@ -98,6 +97,10 @@ function parse_tests () {
 	const pack			= hhdt.parse( success_msg );
 
 	expect( pack.value()		).to.be.true;
+
+	const preparsed			= hhdt.parse( JSON.parse(success_msg) );
+
+	expect( preparsed.value()	).to.be.true;
     });
 
     it("should parse JSON into error package", async () => {
@@ -108,6 +111,26 @@ function parse_tests () {
 	expect(() => {
 	    throw error;
 	}				).to.throw( hhdt.sources.HoloError, "instance is not active" );
+    });
+
+    it("should fail to parse invalid message", async () => {
+	expect(() => {
+	    hhdt.parse( null );
+	}				).to.throw( TypeError, "Value cannot be null or undefined" );
+	expect(() => {
+	    hhdt.parse( "" );
+	}				).to.throw( TypeError, "Invalid message format: expected JSON, not ''" );
+	expect(() => {
+	    hhdt.parse({
+		"payload": true,
+	    });
+	}				).to.throw( TypeError, "Invalid content: missing 'type'" );
+	expect(() => {
+	    hhdt.parse({
+		"type": "error",
+		"payload": true,
+	    });
+	}				).to.throw( TypeError, "Invalid error format: Value is required" );
     });
 
     it("should fail to parse JSON into error package", async () => {

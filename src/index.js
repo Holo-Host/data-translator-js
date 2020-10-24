@@ -117,15 +117,22 @@ class Package {
 	});
     }
 
-    constructor ( payload, opts = {} ) {
-	assert_type( "string",	opts.type,		false );
-	assert_type( "string",	opts.response_id,	false );
+    constructor ( payload, opts = {}, metadata ) {
+	if ( opts === null || opts === undefined )
+	    opts			= {};
+
+	assert_type( "has_prototype",	opts );
+
+	assert_type( "string",		opts.type,	false );
+	assert_type( "has_prototype",	metadata,	false );
 
 	if ( ![undefined, "success", "error"].includes( opts.type ) )
 	    throw new TypeError(`Invalid 'type' value: ${opts.type}`);
 
 	this.type			= opts.type || "success";
-	this.response_id		= opts.response_id;
+	this.metadata			= metadata
+	    ? JSON.parse(JSON.stringify(metadata))
+	    : null;
 
 	if ( this.type === "error" ) {
 	    assert_type( "has_prototype",	payload );
@@ -174,8 +181,8 @@ class Package {
 	    "payload": value,
 	};
 
-	if ( this.response_id !== undefined )
-	    pack.response_id		= this.response_id;
+	if ( this.metadata !== null )
+	    pack.metadata		= this.metadata;
 
 	return pack;
     }
@@ -190,21 +197,36 @@ module.exports				= {
     sources,
     Package,
     parse ( msg ) {
-	const data			= typeof msg === "string"
-	      ? JSON.parse(msg)
-	      : msg;
+	let data;
+
+	try {
+	    data			= typeof msg === "string"
+		? JSON.parse(msg)
+		: msg;
+	} catch (err) {
+	    throw new TypeError(`Invalid message format: expected JSON, not '${msg}'`);
+	}
+
+	assert_type( "has_prototype",	data );
 
 	if ( data.type === "success" ) {
 	    return new Package( data.payload, {
-		"response_id": data.response_id,
+		"metadata": data.metadata,
 	    });
 	}
 	else if ( data.type === "error" ) {
-	    return new Package( data.payload, {
-		"type": data.type,
-	    });
+	    try {
+		return new Package( data.payload, {
+		    "type": data.type,
+		});
+	    } catch ( err ) {
+		if ( err instanceof TypeError )
+		    throw new TypeError(`Invalid error format: ${err.message}`);
+	    }
 	}
+	else if ( data.type === undefined )
+	    throw new TypeError(`Invalid content: missing 'type'`);
 	else
-	    throw TypeError(`Unknown package type '${data.type}'`);
+	    throw new TypeError(`Unknown package type '${data.type}'`);
     },
 };
