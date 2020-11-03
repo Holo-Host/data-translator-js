@@ -130,9 +130,9 @@ class Package {
 	    throw new TypeError(`Invalid 'type' value: ${opts.type}`);
 
 	this.type			= opts.type || "success";
-	this.metadata			= metadata
+	this._metadata			= metadata
 	    ? JSON.parse(JSON.stringify(metadata))
-	    : null;
+	    : {};
 
 	if ( this.type === "error" ) {
 	    assert_type( "has_prototype",	payload );
@@ -150,6 +150,24 @@ class Package {
 	}
 
 	this.payload			= payload
+    }
+
+    metadata ( key, value ) {
+	if ( arguments.length === 1 ) {
+	    return this._metadata[key] === undefined
+		? null
+		: this._metadata[key];
+	}
+
+	if ( value === undefined ) {
+	    const previous_value	= this._metadata[key];
+	    delete this._metadata[key];
+	    return previous_value;
+	}
+
+	this._metadata[key]		= value;
+
+	return this._metadata[key];
     }
 
     value () {
@@ -181,8 +199,8 @@ class Package {
 	    "payload": value,
 	};
 
-	if ( this.metadata !== null )
-	    pack.metadata		= this.metadata;
+	if ( Object.keys(this._metadata).length > 0 )
+	    pack.metadata		= this._metadata;
 
 	return pack;
     }
@@ -210,15 +228,13 @@ module.exports				= {
 	assert_type( "has_prototype",	data );
 
 	if ( data.type === "success" ) {
-	    return new Package( data.payload, {
-		"metadata": data.metadata,
-	    });
+	    return new Package( data.payload, {}, data.metadata );
 	}
 	else if ( data.type === "error" ) {
 	    try {
 		return new Package( data.payload, {
 		    "type": data.type,
-		});
+		}, data.metadata );
 	    } catch ( err ) {
 		if ( err instanceof TypeError )
 		    throw new TypeError(`Invalid error format: ${err.message}`);

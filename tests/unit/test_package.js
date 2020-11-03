@@ -9,11 +9,16 @@ const hhdt				= require('../../src/index.js');
 const { Package }			= hhdt;
 
 
+const response_id			= "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL";
 const success_msg			= JSON.stringify({
     "type": "success",
     "metadata": {
-	"response_id": "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL",
+	response_id,
     },
+    "payload": true,
+});
+const success_no_metadata_msg		= JSON.stringify({
+    "type": "success",
     "payload": true,
 });
 const holo_error_msg			= JSON.stringify({
@@ -31,11 +36,25 @@ class InstanceNotRunningError extends Error {}
 function create_tests () {
     it("should create success package", async () => {
 	const pack			= new Package( true, {}, {
-	    "response_id": "QmV1NgkXFwromLvyAmASN7MbgLtgUaEYkozHPGUxcHAbSL",
+	    "response_id": response_id,
 	});
 
 	expect( pack.value()		).to.be.true;
 	expect( pack.toJSON()		).to.deep.equal( JSON.parse(success_msg) );
+    });
+
+    it("should create success package and set metadata", async () => {
+	const pack			= new Package( true );
+	pack.metadata("response_id", response_id );
+
+	expect( pack.value()		).to.be.true;
+	expect( pack.toJSON()		).to.deep.equal( JSON.parse(success_msg) );
+
+	const resp_id			= pack.metadata("response_id", undefined );
+
+	expect( pack.value()		).to.be.true;
+	expect( resp_id			).to.equal( response_id );
+	expect( pack.toJSON()		).to.deep.equal( JSON.parse(success_no_metadata_msg) );
     });
 
     it("should create error package", async () => {
@@ -100,7 +119,8 @@ function parse_tests () {
 
 	const preparsed			= hhdt.parse( JSON.parse(success_msg) );
 
-	expect( preparsed.value()	).to.be.true;
+	expect( preparsed.value()			).to.be.true;
+	expect( preparsed.metadata("response_id")	).to.equal( response_id );
     });
 
     it("should parse JSON into error package", async () => {
