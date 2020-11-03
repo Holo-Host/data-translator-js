@@ -118,7 +118,7 @@ class Package {
     }
 
     constructor ( payload, opts = {}, metadata ) {
-	if ( opts === null || opts === undefined )
+	if ( opts === null )
 	    opts			= {};
 
 	assert_type( "has_prototype",	opts );
@@ -130,7 +130,7 @@ class Package {
 	    throw new TypeError(`Invalid 'type' value: ${opts.type}`);
 
 	this.type			= opts.type || "success";
-	this._metadata			= metadata
+	this._metadata			= metadata !== undefined
 	    ? JSON.parse(JSON.stringify(metadata))
 	    : {};
 
@@ -153,19 +153,15 @@ class Package {
     }
 
     metadata ( key, value ) {
-	if ( arguments.length === 1 ) {
-	    return this._metadata[key] === undefined
-		? null
-		: this._metadata[key];
-	}
+	if ( arguments.length === 2 ) {
+	    if ( value === undefined ) {
+		const previous_value	= this._metadata[key];
+		delete this._metadata[key];
+		return previous_value;
+	    }
 
-	if ( value === undefined ) {
-	    const previous_value	= this._metadata[key];
-	    delete this._metadata[key];
-	    return previous_value;
+	    this._metadata[key]		= value;
 	}
-
-	this._metadata[key]		= value;
 
 	return this._metadata[key];
     }
