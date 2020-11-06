@@ -118,21 +118,21 @@ class Package {
     }
 
     constructor ( payload, opts = {}, metadata ) {
-	if ( opts === null || opts === undefined )
+	if ( opts === null )
 	    opts			= {};
+	else
+	    assert_type( "has_prototype",	opts );
 
-	assert_type( "has_prototype",	opts );
-
-	assert_type( "string",		opts.type,	false );
-	assert_type( "has_prototype",	metadata,	false );
+	assert_type( "string",			opts.type,	false );
+	assert_type( "has_prototype",		metadata,	false );
 
 	if ( ![undefined, "success", "error"].includes( opts.type ) )
 	    throw new TypeError(`Invalid 'type' value: ${opts.type}`);
 
 	this.type			= opts.type || "success";
-	this.metadata			= metadata
+	this._metadata			= metadata !== undefined
 	    ? JSON.parse(JSON.stringify(metadata))
-	    : null;
+	    : {};
 
 	if ( this.type === "error" ) {
 	    assert_type( "has_prototype",	payload );
@@ -150,6 +150,20 @@ class Package {
 	}
 
 	this.payload			= payload
+    }
+
+    metadata ( key, value ) {
+	if ( arguments.length === 2 ) {
+	    if ( value === undefined ) {
+		const previous_value	= this._metadata[key];
+		delete this._metadata[key];
+		return previous_value;
+	    }
+
+	    this._metadata[key]		= value;
+	}
+
+	return this._metadata[key];
     }
 
     value () {
@@ -181,8 +195,8 @@ class Package {
 	    "payload": value,
 	};
 
-	if ( this.metadata !== null )
-	    pack.metadata		= this.metadata;
+	if ( Object.keys(this._metadata).length > 0 )
+	    pack.metadata		= this._metadata;
 
 	return pack;
     }
@@ -210,15 +224,13 @@ module.exports				= {
 	assert_type( "has_prototype",	data );
 
 	if ( data.type === "success" ) {
-	    return new Package( data.payload, {
-		"metadata": data.metadata,
-	    });
+	    return new Package( data.payload, null, data.metadata );
 	}
 	else if ( data.type === "error" ) {
 	    try {
 		return new Package( data.payload, {
 		    "type": data.type,
-		});
+		}, data.metadata );
 	    } catch ( err ) {
 		if ( err instanceof TypeError )
 		    throw new TypeError(`Invalid error format: ${err.message}`);

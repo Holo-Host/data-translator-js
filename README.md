@@ -60,6 +60,10 @@ ws.on("message", (msg) => {
 });
 ```
 
+### API Reference
+
+See [API.md](API.md)
+
 ### Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)

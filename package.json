@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/data-translator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A tool for translating payloads across Holo services (layer 6 of OSI Model)",
   "main": "src/index.js",
   "module": "src/index.js",
