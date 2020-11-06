@@ -120,11 +120,11 @@ class Package {
     constructor ( payload, opts = {}, metadata ) {
 	if ( opts === null )
 	    opts			= {};
+	else
+	    assert_type( "has_prototype",	opts );
 
-	assert_type( "has_prototype",	opts );
-
-	assert_type( "string",		opts.type,	false );
-	assert_type( "has_prototype",	metadata,	false );
+	assert_type( "string",			opts.type,	false );
+	assert_type( "has_prototype",		metadata,	false );
 
 	if ( ![undefined, "success", "error"].includes( opts.type ) )
 	    throw new TypeError(`Invalid 'type' value: ${opts.type}`);
