@@ -224,7 +224,7 @@ module.exports				= {
 	assert_type( "has_prototype",	data );
 
 	if ( data.type === "success" ) {
-	    return new Package( data.payload, {}, data.metadata );
+	    return new Package( data.payload, null, data.metadata );
 	}
 	else if ( data.type === "error" ) {
 	    try {
