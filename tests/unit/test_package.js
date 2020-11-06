@@ -36,7 +36,7 @@ class InstanceNotRunningError extends Error {}
 function create_tests () {
     it("should create success package", async () => {
 	const pack			= new Package( true, null, {
-	    "response_id": response_id,
+	    response_id,
 	});
 
 	expect( pack.value()		).to.be.true;
